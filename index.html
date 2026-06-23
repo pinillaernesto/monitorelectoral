@@ -67,7 +67,8 @@
   /* ---- Hero ---- */
   .hero{padding:64px 0 38px;border-bottom:1px solid var(--line)}
   .eyebrow{color:var(--gold);font-size:13px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;margin-bottom:18px}
-  .hero h1{font-size:clamp(28px,4.6vw,48px);line-height:1.1;font-weight:800;letter-spacing:-.02em;max-width:24ch}
+  .hero h1{font-size:clamp(24px,3.4vw,38px);line-height:1.18;font-weight:800;letter-spacing:-.015em;max-width:none}
+  @media(max-width:640px){.hero h1 br{display:none}}
   .hero h1 .hl{color:var(--gold)}
   .hero p.lede{margin-top:20px;font-size:clamp(16px,2vw,19px);color:var(--text-dim);max-width:62ch}
 
@@ -125,7 +126,7 @@
 <section class="hero">
   <div class="wrap">
     <div class="eyebrow">Elecciones Presidenciales · Colombia 2026</div>
-    <h1>Proyecté quién ganaría la <span class="hl">presidencia de Colombia</span> y acerté su votación con menos del 1% de error.</h1>
+    <h1>Proyecté quién ganaría la <span class="hl">presidencia de Colombia</span><br>y acerté su votación con menos del 1% de error.</h1>
     <p class="lede">Monitor electoral de la segunda vuelta: resultados oficiales analizados departamento por departamento y municipio por municipio. Datos de la Registraduría Nacional, con 99,99% de mesas escrutadas.</p>
 
     <div class="stats">
@@ -145,6 +146,19 @@
       <iframe id="pbiFrame" title="Elecciones a presidencia 2026 2da vuelta" src="https://app.powerbi.com/view?r=eyJrIjoiMjVmZTk0ZTUtZTg0ZC00NTA2LWFlMjctZTY1ZjFiM2ZhNDk0IiwidCI6ImIzMWQxNDNmLTcyMjgtNDYyNi1iMzNlLTcyODM0ZjYxMWI1NSIsImMiOjR9&pageName=b2de0ea0894d02011590" frameborder="0" allowFullScreen="true"></iframe>
     </div>
     <p class="note">El tablero se actualiza con los datos oficiales publicados por la Registraduría Nacional del Estado Civil. Navega por departamento y municipio usando los filtros laterales. Análisis de carácter informativo y metodológico.</p>
+  </div>
+</section>
+
+<section class="board" style="padding-top:0">
+  <div class="wrap">
+    <h2>El modelo de proyección</h2>
+    <p class="note" style="margin-top:0;margin-bottom:18px;font-size:15px;color:var(--text-dim);max-width:72ch">
+      A continuación les dejo el modelo que utilicé para mi proyección. Haz clic sobre la bandera para resetear los filtros.
+    </p>
+    <div class="frame" id="boardFrame2">
+      <button class="fs-btn" id="fsBtn2" title="Pantalla completa" aria-label="Ver en pantalla completa">⛶ Pantalla completa</button>
+      <iframe id="pbiFrame2" title="Modelo de proyección — Segunda vuelta" src="https://app.powerbi.com/view?r=eyJrIjoiMjVmZTk0ZTUtZTg0ZC00NTA2LWFlMjctZTY1ZjFiM2ZhNDk0IiwidCI6ImIzMWQxNDNmLTcyMjgtNDYyNi1iMzNlLTcyODM0ZjYxMWI1NSIsImMiOjR9&pageName=717dd9cee1380587e9e6" frameborder="0" allowFullScreen="true"></iframe>
+    </div>
   </div>
 </section>
 
@@ -184,24 +198,29 @@
     .catch(function(){ el.textContent = OFFSET.toLocaleString('es-CO'); });
 })();
 
-/* ---- Pantalla completa del tablero ---- */
+/* ---- Pantalla completa de los tableros ---- */
 (function(){
-  var frame = document.getElementById('boardFrame');
-  var btn = document.getElementById('fsBtn');
-  if(!frame||!btn) return;
-  btn.addEventListener('click', function(){
-    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-    if(!fsEl){
-      if(frame.requestFullscreen) frame.requestFullscreen();
-      else if(frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
-    } else {
-      if(document.exitFullscreen) document.exitFullscreen();
-      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
-    }
-  });
+  function wire(frameId, btnId){
+    var frame = document.getElementById(frameId);
+    var btn = document.getElementById(btnId);
+    if(!frame||!btn) return;
+    btn.addEventListener('click', function(){
+      var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      if(!fsEl){
+        if(frame.requestFullscreen) frame.requestFullscreen();
+        else if(frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+      } else {
+        if(document.exitFullscreen) document.exitFullscreen();
+        else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    });
+  }
+  wire('boardFrame','fsBtn');
+  wire('boardFrame2','fsBtn2');
   function sync(){
     var on = document.fullscreenElement || document.webkitFullscreenElement;
-    btn.textContent = on ? '⛶ Salir' : '⛶ Pantalla completa';
+    var label = on ? '⛶ Salir' : '⛶ Pantalla completa';
+    ['fsBtn','fsBtn2'].forEach(function(id){ var b=document.getElementById(id); if(b) b.textContent=label; });
   }
   document.addEventListener('fullscreenchange', sync);
   document.addEventListener('webkitfullscreenchange', sync);
