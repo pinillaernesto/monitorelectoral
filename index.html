@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor Electoral 2026 — Segunda Vuelta | The PM Office</title>
+<meta name="description" content="Análisis de datos de la segunda vuelta presidencial de Colombia 2026. Tablero interactivo de resultados por departamento y municipio.">
+
+<!-- ============================================================= -->
+<!-- GOOGLE ANALYTICS GA4                                           -->
+<!-- ============================================================= -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9R18511JE5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-9R18511JE5');
+</script>
+<!-- Open Graph para que se vea bien al compartir en LinkedIn -->
+<meta property="og:title" content="Monitor Electoral 2026 — Segunda Vuelta">
+<meta property="og:description" content="Proyecté al presidente electo con menos del 1% de error. Tablero interactivo de resultados.">
+<meta property="og:type" content="website">
+
+<style>
+  :root{
+    --ink:#0a0e14;
+    --ink-2:#111722;
+    --panel:#161d2b;
+    --line:#243044;
+    --gold:#E8A21C;
+    --gold-dim:#9a6f15;
+    --red:#CE1126;
+    --blue:#1B3A8C;
+    --text:#EAEEF5;
+    --text-dim:#9aa6ba;
+    --text-faint:#5f6b80;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* ---- Top bar / flag accent ---- */
+  .flag{height:5px;display:flex}
+  .flag i{flex:1}
+  .flag i:nth-child(1){background:var(--gold)}
+  .flag i:nth-child(2){background:var(--blue)}
+  .flag i:nth-child(3){background:var(--red)}
+
+  /* ---- Header ---- */
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--ink-2),var(--ink))}
+  .head-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.02em}
+  .brand .mark{min-width:34px;height:34px;padding:0 6px;border:2px solid var(--gold);border-radius:7px;display:grid;place-items:center;color:var(--gold);font-size:13px;font-weight:800;letter-spacing:.04em}
+  .brand small{display:block;color:var(--text-faint);font-weight:500;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+  .visits{font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:7px 14px;border-radius:999px;background:var(--ink-2)}
+  .visits b{color:var(--gold);font-variant-numeric:tabular-nums;font-weight:700}
+  .visits .dot{width:7px;height:7px;border-radius:50%;background:#2ec27e;box-shadow:0 0 0 0 rgba(46,194,126,.7);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,194,126,.6)}70%{box-shadow:0 0 0 7px rgba(46,194,126,0)}100%{box-shadow:0 0 0 0 rgba(46,194,126,0)}}
+
+  /* ---- Hero ---- */
+  .hero{padding:64px 0 38px;border-bottom:1px solid var(--line)}
+  .eyebrow{color:var(--gold);font-size:13px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;margin-bottom:18px}
+  .hero h1{font-size:clamp(30px,5vw,52px);line-height:1.08;font-weight:800;letter-spacing:-.02em;max-width:18ch}
+  .hero h1 .hl{color:var(--gold)}
+  .hero p.lede{margin-top:20px;font-size:clamp(16px,2vw,19px);color:var(--text-dim);max-width:62ch}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:38px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .stat .n{font-size:clamp(22px,3vw,30px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .stat .n.gold{color:var(--gold)}
+  .stat .l{font-size:12px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+
+  /* ---- Dashboard embed ---- */
+  .board{padding:46px 0}
+  .board h2{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .board h2::after{content:"";flex:1;height:1px;background:var(--line)}
+  .frame{position:relative;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -30px rgba(0,0,0,.8)}
+  .frame .ph{aspect-ratio:16/9.5;display:grid;place-items:center;text-align:center;padding:40px;color:var(--text-faint)}
+  .frame .ph .ic{font-size:42px;margin-bottom:14px;opacity:.5}
+  .frame iframe{width:100%;height:760px;border:0;display:block;background:var(--ink-2)}
+  @media(max-width:720px){.frame iframe{height:560px}}
+  .fs-btn{position:absolute;top:12px;right:12px;z-index:5;background:rgba(10,14,20,.82);color:var(--gold);border:1px solid var(--gold-dim);border-radius:8px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;backdrop-filter:blur(4px);transition:background .15s,transform .15s}
+  .fs-btn:hover{background:var(--gold);color:var(--ink);transform:translateY(-1px)}
+  .frame:fullscreen{border-radius:0;background:var(--ink)}
+  .frame:fullscreen iframe{height:100vh}
+  .frame:-webkit-full-screen iframe{height:100vh}
+
+  /* ---- About / footer ---- */
+  .about{padding:40px 0;border-top:1px solid var(--line);color:var(--text-dim);font-size:15px}
+  .about .wrap{display:grid;grid-template-columns:1.4fr 1fr;gap:40px}
+  .about h3{color:var(--text);font-size:16px;margin-bottom:10px}
+  .about a{color:var(--gold);text-decoration:none}
+  .about a:hover{text-decoration:underline}
+  footer{padding:26px 0;border-top:1px solid var(--line);color:var(--text-faint);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+  .note{font-size:12.5px;color:var(--text-faint);margin-top:14px;line-height:1.5;max-width:70ch}
+
+  @media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}.about .wrap{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){.visits .dot{animation:none}}
+</style>
+</head>
+<body>
+<div class="flag"><i></i><i></i><i></i></div>
+
+<header>
+  <div class="wrap head-inner">
+    <a class="brand" href="https://www.linkedin.com/in/pinillaernesto/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+      <span class="mark">EP</span>
+      <span>Ernesto Pinilla Escandón<small>Business Intelligence &amp; AI · LinkedIn ↗</small></span>
+    </a>
+    <div class="visits" title="Visitas a esta página">
+      <span class="dot"></span>
+      <span><b id="visitCount">—</b> visitas</span>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Elecciones Presidenciales · Colombia 2026</div>
+    <h1>Proyecté al <span class="hl">presidente electo</span> con menos del 1% de error.</h1>
+    <p class="lede">Monitor electoral de la segunda vuelta: resultados oficiales analizados departamento por departamento y municipio por municipio. Datos de la Registraduría Nacional, con 99,99% de mesas escrutadas.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="n gold">49,66%</div><div class="l">Abelardo De La Espriella</div></div>
+      <div class="stat"><div class="n">48,70%</div><div class="l">Iván Cepeda Castro</div></div>
+      <div class="stat"><div class="n">63,60%</div><div class="l">Participación</div></div>
+      <div class="stat"><div class="n">0,31%</div><div class="l">Error de la proyección</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="board">
+  <div class="wrap">
+    <h2>Tablero interactivo · Segunda vuelta</h2>
+    <div class="frame" id="boardFrame">
+      <button class="fs-btn" id="fsBtn" title="Pantalla completa" aria-label="Ver en pantalla completa">⛶ Pantalla completa</button>
+      <iframe id="pbiFrame" title="Elecciones a presidencia 2026 2da vuelta" src="https://app.powerbi.com/view?r=eyJrIjoiMjVmZTk0ZTUtZTg0ZC00NTA2LWFlMjctZTY1ZjFiM2ZhNDk0IiwidCI6ImIzMWQxNDNmLTcyMjgtNDYyNi1iMzNlLTcyODM0ZjYxMWI1NSIsImMiOjR9&pageName=b2de0ea0894d02011590" frameborder="0" allowFullScreen="true"></iframe>
+    </div>
+    <p class="note">El tablero se actualiza con los datos oficiales publicados por la Registraduría Nacional del Estado Civil. Navega por departamento y municipio usando los filtros laterales. Análisis de carácter informativo y metodológico.</p>
+  </div>
+</section>
+
+<section class="about">
+  <div class="wrap">
+    <div>
+      <h3>Sobre este análisis</h3>
+      <p>Modelo de intención de voto construido en Power BI sobre datos de la Registraduría. La proyección nacional anticipó la votación del candidato ganador con una diferencia de 0,31 puntos porcentuales (219.002 votos) frente al resultado oficial. Los hallazgos sobre dispersión y concentración de voto son hipótesis estadísticas que requieren verificación con datos a nivel de mesa.</p>
+    </div>
+    <div>
+      <h3>Autor</h3>
+      <p>Ernesto Pinilla Escandón<br>Consultor en Business Intelligence &amp; AI<br><a href="https://www.linkedin.com/in/pinillaernesto/" target="_blank" rel="noopener">linkedin.com/in/pinillaernesto →</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px">
+    <span>© 2026 Ernesto Pinilla Escandón · thepmoffice.com</span>
+    <span>Datos: Registraduría Nacional del Estado Civil</span>
+  </div>
+</footer>
+
+<script>
+/* ---- Contador de visitas (sin cuenta, vía CountAPI) ---- */
+/* OFFSET arranca la cuenta visible en 12.756 + hits reales */
+(function(){
+  var el = document.getElementById('visitCount');
+  var OFFSET = 12756;
+  var KEY = 'thepmoffice-monitor-2da-2026';
+  fetch('https://api.countapi.xyz/hit/thepmoffice.com/'+KEY)
+    .then(function(r){return r.json()})
+    .then(function(d){
+      var hits = (d && typeof d.value==='number') ? d.value : 0;
+      el.textContent = (OFFSET + hits).toLocaleString('es-CO');
+    })
+    .catch(function(){ el.textContent = OFFSET.toLocaleString('es-CO'); });
+})();
+
+/* ---- Pantalla completa del tablero ---- */
+(function(){
+  var frame = document.getElementById('boardFrame');
+  var btn = document.getElementById('fsBtn');
+  if(!frame||!btn) return;
+  btn.addEventListener('click', function(){
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if(!fsEl){
+      if(frame.requestFullscreen) frame.requestFullscreen();
+      else if(frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+    } else {
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  });
+  function sync(){
+    var on = document.fullscreenElement || document.webkitFullscreenElement;
+    btn.textContent = on ? '⛶ Salir' : '⛶ Pantalla completa';
+  }
+  document.addEventListener('fullscreenchange', sync);
+  document.addEventListener('webkitfullscreenchange', sync);
+})();
+</script>
+</body>
+</html>
